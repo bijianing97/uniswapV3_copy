@@ -2,7 +2,7 @@
 pragma solidity ^0.8.14;
 
 import "forge-std/Test.sol";
-import "./ ERC20Mintable.sol";
+import "./ERC20Mintable.sol";
 import "../src/UniswapV3Pool.sol";
 
 contract UniswapV3PoolTest is Test {
@@ -22,7 +22,7 @@ contract UniswapV3PoolTest is Test {
         uint128 liquility;
         uint160 currentSqrtP;
         bool transferInSwapCallback;
-        bool mintLiquidty;
+        bool mintLiquility;
     }
 
     function setUp() public {
@@ -40,7 +40,7 @@ contract UniswapV3PoolTest is Test {
             liquility: 15178823437515098684544,
             currentSqrtP: 5602277097478614198912276234240,
             transferInSwapCallback: true,
-            mintLiquidty: true
+            mintLiquility: true
         });
 
         (uint256 poolBalace0, uint256 poolBalance1) = setupTestCase(params);
@@ -120,18 +120,19 @@ contract UniswapV3PoolTest is Test {
             params.currentTick
         );
 
-        if (params.mintLiquidty) {
+        if (params.mintLiquility) {
             (poolBalance0, poolBalance1) = pool.mint(
                 address(this),
                 params.lowerTick,
                 params.upperTick,
-                params.liquility
+                params.liquility,
+                ""
             );
         }
-        transferInSwapCallback = params.shouldTransferInCallback;
+        transferInSwapCallback = params.transferInSwapCallback;
     }
 
-    function UniswapV3MintCallback(
+    function uniswapV3MintCallback(
         uint256 amount0,
         uint256 amount1,
         bytes calldata data
@@ -141,11 +142,10 @@ contract UniswapV3PoolTest is Test {
                 data,
                 (UniswapV3Pool.CallbackData)
             );
+
+            IERC20(extra.token0).transferFrom(extra.payer, msg.sender, amount0);
+            IERC20(extra.token1).transferFrom(extra.payer, msg.sender, amount1);
         }
-
-        IERC20(extra.token0).transferFrom(extra.payer, msg.sender, amount0);
-
-        IERC20(extra.token1).transferFrom(extra.payer, msg.sender, amount1);
     }
 
     function testSwapBuyEth() public {
@@ -155,10 +155,10 @@ contract UniswapV3PoolTest is Test {
             currentTick: 85176,
             lowerTick: 84222,
             upperTick: 86129,
-            liquidity: 1517882343751509868544,
+            liquility: 1517882343751509868544,
             currentSqrtP: 5602277097478614198912276234240,
-            shouldTransferInCallback: true,
-            mintLiqudity: true
+            transferInSwapCallback: true,
+            mintLiquility: true
         });
         (uint256 poolBalance0, uint256 poolBalance1) = setupTestCase(params);
 

@@ -32,7 +32,7 @@ contract UniswapV3Manager {
     ) public {
         UniswapV3Pool.CallbackData memory extra = abi.decode(
             data,
-            UniswapV3Pool.CallbackData
+            (UniswapV3Pool.CallbackData)
         );
 
         IERC20(extra.token0).transferFrom(extra.payer, msg.sender, amount0);
